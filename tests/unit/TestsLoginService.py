@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 from app.services.LoginService import LoginService 
 from app.repositories.LoginRepository import LoginRepository
-from app.models.userDB import userDB
+from app.models.UserDB import UserDB
 
 class TestsLoginService(unittest.TestCase):
     def setUp(self):
@@ -10,7 +10,7 @@ class TestsLoginService(unittest.TestCase):
         self.service = LoginService(self.mockRepo)
 
     def testLoginSuccess(self):
-        fake_user = userDB(uuid="123", username="admin", usertype="admin")
+        fake_user = UserDB(uuid="123", username="admin", usertype="admin")
         self.mockRepo.getUserByUsername.return_value = fake_user
 
         result = self.service.login("admin", "password123")

@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from app.repositories.LoginRepository import LoginRepository
 from app.PasswordManager import PasswordManager
 from app import Logger
-from app.models.userDB import userDB
+from app.models.UserDB import UserDB
 from pathlib import Path
 
 logger = Logger.createLogger(__name__)
@@ -65,7 +65,7 @@ class TestsLoginRepositoriy(unittest.TestCase):
 
 
         repo = LoginRepository(self.dbSession)
-        user: userDB | None = repo.getUserByUsername("matheus_test", password)
+        user: UserDB | None = repo.getUserByUsername("matheus_test", password)
 
 
         self.assertIsNotNone(user)

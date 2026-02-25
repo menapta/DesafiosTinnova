@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class userDB(BaseModel):
+class UserDB(BaseModel):
     uuid: str
     username: str
     usertype: str

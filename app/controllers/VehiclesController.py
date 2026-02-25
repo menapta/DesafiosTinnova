@@ -20,3 +20,20 @@ def getVehicles(data: dict = Depends(getAuthData), db: Session = Depends(getDB))
     vehicles: list[Vehicle] | None = service.getAllVehicles()
 
     return {"vehicles": vehicles}
+
+@router.get("/veiculos/{uuid}")
+def getVehicleByUUID(uuid: str, data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
+    logger.info(f"Attempting to retrieve vehicle with UUID: {uuid} for user: {data['user']}")
+    
+    repository = VehiclesRepository(db)
+    service = VehiclesService(repository)
+    vehicle: Vehicle | None = service.getVehicleByUUID(uuid)
+
+    if vehicle is None:
+        logger.warning(f"Vehicle with UUID: {uuid} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Vehicle not found!"
+        )
+    
+    return {"vehicle": vehicle}

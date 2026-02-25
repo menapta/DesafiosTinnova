@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, patch
 from app.main import app 
 from app.DBConn import getDB
-from app.models.userDB import userDB
+from app.models.UserDB import UserDB
 
 client = TestClient(app)
 
@@ -21,7 +21,7 @@ class TestsLoginController:
     @patch("app.repositories.LoginRepository.LoginRepository.getUserByUsername")
     def testSuccessLogin(self, mockGetUser): 
         
-        mockGetUser.return_value = userDB(
+        mockGetUser.return_value = UserDB(
             uuid="123", 
             username="admin", 
             usertype="admin"

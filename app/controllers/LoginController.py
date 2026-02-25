@@ -5,7 +5,7 @@ import jwt
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from ..models.userDB import userDB
+from ..models.UserDB import UserDB
 
 
 from ..DBConn import getDB
@@ -41,7 +41,7 @@ def login(userData: LoginRequest, db: Session = Depends(getDB)):
     #     )
     
     
-    user: userDB | None = service.login(userData.username, userData.password)
+    user: UserDB | None = service.login(userData.username, userData.password)
 
     
     if user is None:
