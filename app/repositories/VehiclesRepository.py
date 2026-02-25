@@ -26,6 +26,7 @@ class VehiclesRepository:
                      v.date_created AS date_created
             FROM vehicles v
             JOIN brands b ON v.brand_id = b.id
+            WHERE v.is_deleted = false
             ORDER BY v.date_created DESC             
             OFFSET :offset
             LIMIT :limit
@@ -70,6 +71,7 @@ class VehiclesRepository:
             FROM vehicles v
             JOIN brands b ON v.brand_id = b.id
             WHERE v.uuid = :uuid
+              AND v.is_deleted = false
         """)
         result = self.db.execute(query, {"uuid": uuid}).fetchone()
         logger.debug(f"Query executed for UUID: {uuid}, result: {result}")
@@ -105,7 +107,9 @@ class VehiclesRepository:
                      v.date_created AS date_created
             FROM vehicles v
             JOIN brands b ON v.brand_id = b.id
-            WHERE v.price >= :minPrice AND v.price <= :maxPrice
+            WHERE v.price >= :minPrice 
+              AND v.price <= :maxPrice
+              AND v.is_deleted = false
             ORDER BY v.date_created DESC             
             OFFSET :offset
             LIMIT :limit
@@ -149,9 +153,10 @@ class VehiclesRepository:
                      v.date_created AS date_created
             FROM vehicles v
             JOIN brands b ON v.brand_id = b.id
-            WHERE (b.brand_name = :brand)
-              AND (v.year = :year)
-              AND (v.color = :color)
+            WHERE b.brand_name = :brand
+              AND v.year = :year
+              AND v.color = :color
+              AND v.is_deleted = false
             ORDER BY v.date_created DESC             
             OFFSET :offset
             LIMIT :limit
@@ -180,3 +185,32 @@ class VehiclesRepository:
 
         logger.debug(f"Fetched {len(vehicles)} vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}")
         return vehicles
+    
+    def getReportbyBrand(self):
+        logger.info("Fetching report by brand")
+        query = text("""
+            SELECT 
+                     b.brand_name AS brand_name, 
+                     COUNT(v.id) AS total_vehicles
+            FROM vehicles v
+            JOIN brands b ON v.brand_id = b.id
+            GROUP BY b.brand_name
+        """)
+        result = self.db.execute(query).fetchall()
+        logger.debug(f"Query executed for report by brand, number of brands fetched: {len(result)}")
+
+        if result is None:
+            logger.debug("No brands found for report")
+            return None
+        
+        report = []
+        for cell in result:
+            logger.debug(f"Processing brand report: {cell}")
+            report.append({
+                "brand_name": cell[0],
+                "total_vehicles": cell[1],
+                "average_price": cell[2]
+            })
+
+        logger.debug(f"Fetched report for {len(report)} brands")
+        return report
