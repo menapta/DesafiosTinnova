@@ -120,3 +120,18 @@ class TestsVehicleRepository(unittest.TestCase):
         repo = VehiclesRepository(self.dbSession)
         vehicles: list[Vehicle] = repo.getVehicleReportByBrand()
         self.assertEqual(len(vehicles), 3)
+
+    # def testInsertVehicle(self):
+    #     self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+    #     repo = VehiclesRepository(self.dbSession)
+    #     vehicle = Vehicle(
+    #         brand_name="Toyota",
+    #         complement="Corolla XEi 2.0 Flex 16V Aut. 2020",
+    #         year=2020,
+    #         color="Prata",
+    #         price=15000000,
+    #         plate="ABC1234",
+    #         date_created="2023-01-01T00:00:00"
+    #     )
+    #     result = repo.createVehicle(vehicle)    
+    #     self.assertTrue(result)

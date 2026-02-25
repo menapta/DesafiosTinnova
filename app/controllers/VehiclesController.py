@@ -3,6 +3,8 @@ from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.models.InsertVehicle import InsertVehicle
+
 from ..HeaderSecurity import getAuthData, adminAuthData    
 from ..services.VehiclesService import VehiclesService
 from ..repositories.VehiclesRepository import VehiclesRepository
@@ -78,28 +80,20 @@ def getVehicleReportByBrand(data: dict = Depends(getAuthData), db: Session = Dep
     report = service.getVehicleReportByBrand()
     return {"report": report}
 
-# @router.get("/veiculos?minPreco={minPrice}&maxPreco={maxPrice}")
-# def getVehicleByPrice(minPrice: int, maxPrice: int, data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
-#     logger.info(f"Attempting to retrieve vehicles with price between {minPrice} and {maxPrice} for user: {data['user']}")
-#     if not int(minPrice) >= 0 or not int(maxPrice) >= 0:
-#         logger.warning(f"Invalid price range: minPrice={minPrice}, maxPrice={maxPrice}")
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Price values must be non-negative integers!"
-#         )
-    
-#     if minPrice > maxPrice:
-#         logger.warning(f"Invalid price range: minPrice={minPrice} is greater than maxPrice={maxPrice}")
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="minPrice cannot be greater than maxPrice!"
-#         )
-    
-#     minPrice = int(minPrice)*100
-#     maxPrice = int(maxPrice)*100
+@router.post("/veiculos")
+def createVehicle(vehicleData: InsertVehicle, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+    logger.info(f"Attempting to create vehicle with data: {vehicleData} for admin user: {data['user']}")
+    repository = VehiclesRepository(db)
+    service = VehiclesService(repository)
+    success = service.createVehicle(vehicleData)
 
-#     repository = VehiclesRepository(db)
-#     service = VehiclesService(repository)
-#     vehicles: list[Vehicle] | None = service.getVehicleByPrice(minPrice, maxPrice)
+    if not success:
+        logger.warning(f"Failed to create vehicle with data: {vehicleData}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to create vehicle! {}"
+        )
+    logger.info(f"Vehicle created successfully with data: {vehicleData}")
+    return {"message": "Vehicle created successfully!"}
 
-#     return {"vehicles": vehicles}
+

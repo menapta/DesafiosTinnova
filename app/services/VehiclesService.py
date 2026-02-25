@@ -1,3 +1,4 @@
+from app.models.InsertVehicle import InsertVehicle
 from app.repositories import VehiclesRepository
 
 from ..models.Vehicle import Vehicle
@@ -31,3 +32,7 @@ class VehiclesService:
     def getVehicleReportByBrand(self) -> list[dict] | None:
         logger.debug("VehiclesService: Fetching vehicle report by brand")
         return self.repository.getVehicleReportByBrand()
+
+    def createVehicle(self, vehicleData: InsertVehicle) -> bool | None:
+        logger.debug(f"VehiclesService: Creating vehicle with data: {vehicleData}")
+        return self.repository.createVehicle(vehicleData)

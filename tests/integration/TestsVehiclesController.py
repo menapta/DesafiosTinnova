@@ -203,3 +203,23 @@ class TestsVehiclesController:
 
         assert response.status_code == 200
         assert len(response.json()["report"]) == 2
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.createVehicle")
+    def testCreateVehicleSuccess(self, mockCreateVehicle):
+        mockAdminData = {"user": "test_admin", "type": "admin"}
+        app.dependency_overrides[getAuthData] = lambda: mockAdminData
+
+        mockCreateVehicle.return_value = True
+
+        response = client.post("/veiculos", json={
+            "brand_id": 1,
+            "complement": "Corolla",
+            "year": 2020,
+            "color": "Red",
+            "price": 1500000,
+            "plate": "ABC2534"
+        })
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 200
+        assert response.json()["message"] == "Vehicle created successfully!"

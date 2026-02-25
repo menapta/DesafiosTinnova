@@ -2,6 +2,8 @@
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+
+from app.models.InsertVehicle import InsertVehicle
 from .. import Logger
 from ..models.Vehicle import Vehicle
 
@@ -215,15 +217,32 @@ class VehiclesRepository:
         return report
     
 
-
-    def setVehicleAsDeleted(self, uuid: str) -> bool:
-        logger.info(f"Setting vehicle with UUID: {uuid} as deleted")
+    def createVehicle(self, vehicle: InsertVehicle) -> bool:
+        logger.info(f"Inserting new vehicle with UUID: {vehicle.uuid}")
         query = text("""
-            UPDATE vehicles
-            SET is_deleted = true
-            WHERE uuid = :uuid
+            INSERT INTO vehicles (brand_id, complement, year, color, price, plate)
+            VALUES (:brand_id, :complement, :year, :color, :price, :plate)
         """)
-        result = self.db.execute(query, {"uuid": uuid})
+        result = self.db.execute(query, {
+            "brand_id": vehicle.brand_id,
+            "complement": vehicle.complement,
+            "year": vehicle.year,
+            "color": vehicle.color,
+            "price": vehicle.price,
+            "plate": vehicle.plate
+        })
         self.db.commit()
-        logger.debug(f"Vehicle with UUID: {uuid} set as deleted, rows affected: {result.rowcount}")
-        return result.rowcount > 0
+        logger.debug(f"Vehicle inserted successfully, rows affected: {result.rowcount}")
+        return result.rowcount == 1
+
+    # def setVehicleAsDeleted(self, uuid: str) -> bool:
+    #     logger.info(f"Setting vehicle with UUID: {uuid} as deleted")
+    #     query = text("""
+    #         UPDATE vehicles
+    #         SET is_deleted = true
+    #         WHERE uuid = :uuid
+    #     """)
+    #     result = self.db.execute(query, {"uuid": uuid})
+    #     self.db.commit()
+    #     logger.debug(f"Vehicle with UUID: {uuid} set as deleted, rows affected: {result.rowcount}")
+    #     return result.rowcount > 0
