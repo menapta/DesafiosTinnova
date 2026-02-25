@@ -1,11 +1,11 @@
 import unittest
 from app.PasswordManager import PasswordManager 
-from app.Logger import Logger
+from app import Logger
 
 logger = Logger.createLogger(__name__)
 
 
-class PasswordManagerTests(unittest.TestCase):
+class TestsPasswordManager(unittest.TestCase):
 
     def setUp(self):
         self.pm = PasswordManager()

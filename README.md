@@ -2,24 +2,29 @@
 Conjuntos de desafios realizado para empresa Tinnova em 24/04/2026
 Matheus Frantz de Faria
 
-# Possuir Python 3.10 
+## Possuir Python 3.10 
 
-# CRIAR AMBIENTE VIRTUAL
+## CRIAR AMBIENTE VIRTUAL
 python -m venv .venv
 
-# EXECUTAR AMBEINTE VIRTUAL
-  # Linux | mac/OS
+## EXECUTAR AMBEINTE VIRTUAL
+  ### Linux | mac/OS
 source .venv/bin/activate
-  # Windows
+  ### Windows
 .venv\Scripts\activate 
 
-# INSTALAR PACOTES NECESSÀRIOS
+## INSTALAR PACOTES NECESSÀRIOS
 pip install -r requirements.txt
 
 
-# INTRO
+## INTRO
 Cada desafio está localizado em suas respectivas pastas "Desafio'XNomeDesafio'". Cada uma destas pastas tem seu prórpios README 
 
-# DESAFIO 1
+## EXECUÇÔES
+python -m pyttest "$@"
 
- python -m unittest "$@"
+python -m unittest "$@"
+
+
+
+ uvicorn app.main:app --reload --log-level debug

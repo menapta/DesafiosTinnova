@@ -2,15 +2,15 @@ import unittest
 from unittest.mock import MagicMock
 from app.services.LoginService import LoginService 
 from app.repositories.LoginRepository import LoginRepository
-from app.userDB import userDB
+from app.models.userDB import userDB
 
 class TestsLoginService(unittest.TestCase):
     def setUp(self):
         self.mock_repo = MagicMock(spec=LoginRepository)
         self.service = LoginService(self.mock_repo)
 
-    def test_login_success(self):
-        fake_user = userDB(uuid="123", username="admin", typeuser="admin")
+    def testLoginSuccess(self):
+        fake_user = userDB(uuid="123", username="admin", usertype="admin")
         self.mock_repo.getUserByUsername.return_value = fake_user
 
         result = self.service.login("admin", "password123")
@@ -18,7 +18,7 @@ class TestsLoginService(unittest.TestCase):
         self.assertEqual(result.username, "admin")
         self.mock_repo.getUserByUsername.assert_called_once_with("admin", "password123")
 
-    def test_login_failed_user_not_found(self):
+    def testLoginFailedUserNotFound(self):
         self.mock_repo.getUserByUsername.return_value = None
 
         result = self.service.login("usuario_inexistente", "123")

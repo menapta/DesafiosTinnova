@@ -1,14 +1,13 @@
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from ..Logger import Logger
+from .. import Logger
 from ..PasswordManager import PasswordManager
-from ..userDB import userDB
+from ..models.userDB import userDB
 
 logger = Logger.createLogger(__name__)
 class LoginRepository:
     def __init__(self, db_session: Session):
-        self.repository: LoginRepository = self
         self.db = db_session
 
     def getUserByUsername(self, username: str, password: str) -> userDB | None:
@@ -16,7 +15,7 @@ class LoginRepository:
         logger.info(f"Fetching user with username: {username}")
         print(f"Fetching user with username: {username}")
         
-        query = text("SELECT uuid, username, typeuser, passwordcrypt FROM users WHERE username = :u")
+        query = text("SELECT uuid, username, usertype, passwordcrypt FROM users WHERE username = :u")
         result = self.db.execute(query, {"u": username}).fetchone()
 
         if result is None:
@@ -32,8 +31,8 @@ class LoginRepository:
         user = userDB(
             uuid=str(result[0]),
             username=result[1],
-            typeuser=result[2],
+            usertype=result[2],
         )
 
-        logger.debug(f"User found: {user.username}, type: {user.typeuser}")
+        logger.debug(f"User found: {user.username}, type: {user.usertype}")
         return user

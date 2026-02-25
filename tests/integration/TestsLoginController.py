@@ -23,7 +23,7 @@ class TestsLoginController:
         mockGetUser.return_value = userDB(
             uuid="123", 
             username="admin", 
-            typeuser="admin"
+            usertype="admin"
         )
 
         response = client.post(

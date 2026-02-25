@@ -5,13 +5,14 @@ import jwt
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-from ..userDB import userDB
+from ..models.userDB import userDB
 
 
 from ..DBConn import getDB
 from ..services.LoginService import LoginService
 from ..repositories.LoginRepository import LoginRepository
-from ..Logger import Logger
+from .. import Logger
+
 
 SECRET_KEY = "alongsecretkeythatshouldbereplacedwithenvvariable"
 
@@ -51,7 +52,7 @@ def login(userData: LoginRequest, db: Session = Depends(getDB)):
     logger.debug(f"Repository for user: {user.username}")
         
     token = jwt.encode(
-        {"user": user.username,"type": user.typeuser, "exp": datetime.utcnow() + timedelta(minutes=30)},
+        {"user": user.username,"type": user.usertype, "exp": datetime.utcnow() + timedelta(minutes=30)},
         SECRET_KEY,
         algorithm="HS256"
     )
