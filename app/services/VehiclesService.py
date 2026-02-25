@@ -20,6 +20,6 @@ class VehiclesService:
         logger.debug(f"VehiclesService: Fetching vehicle with UUID: {uuid}")
         return self.repository.getVehicleByUUID(uuid)
     
-    def getVehicleByPrice(self, minPrice: int, maxPrice: int) -> list[Vehicle] | None:
+    def getVehicleByPrice(self, minPrice: int, maxPrice: int, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
         logger.debug(f"VehiclesService: Fetching vehicles with price range: {minPrice} to {maxPrice}")
-        return self.repository.getVehiclesByPrice(minPrice, maxPrice)
+        return self.repository.getVehiclesByPrice(minPrice, maxPrice, offset, limit)

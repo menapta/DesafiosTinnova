@@ -49,7 +49,7 @@ class TestsVehicleService(unittest.TestCase):
         ]
         self.mockRepo.getVehiclesByPrice.return_value = fakeVehicles
 
-        result = self.service.getVehicleByPrice(10000000, 20000000)
+        result = self.service.getVehicleByPrice(15000000, 40000000)
 
         self.assertEqual(len(result), 2)
-        self.mockRepo.getVehiclesByPrice.assert_called_once_with(10000000, 20000000)
+        self.mockRepo.getVehiclesByPrice.assert_called_once_with(15000000, 40000000, 0, 20)

@@ -20,18 +20,7 @@ root_dir = current_file.parents[2]
 sql_path = root_dir / "init-scripts" / "0createUsersTable.sql"
 
 class TestsLoginRepositoriy(unittest.TestCase):
-    # @classmethod
-    # def setUpClass(cls):
-    #     with engine.connect() as conn:
-    #         conn.execute(text("""
-    #             CREATE TABLE IF NOT EXISTS users (
-    #                 uuid TEXT PRIMARY KEY,
-    #                 username TEXT,
-    #                 usertype TEXT,
-    #                 passwordcrypt TEXT
-    #             )
-    #         """))
-    #         conn.commit()
+
     @classmethod
     def setUpClass(cls):
         with open(sql_path, "r") as f:
@@ -58,8 +47,8 @@ class TestsLoginRepositoriy(unittest.TestCase):
         hashed_pw = self.pm.hashPassword(password)
         
         self.dbSession.execute(text("""
-            INSERT INTO users (uuid, username, usertype, passwordcrypt) 
-            VALUES ('uuid-test-123', 'matheus_test', 'admin', :pw)
+            INSERT INTO users ( username, usertype, passwordcrypt) 
+            VALUES ('matheus_test', 'admin', :pw)
         """), {"pw": hashed_pw})
         self.dbSession.commit()
 
@@ -75,8 +64,8 @@ class TestsLoginRepositoriy(unittest.TestCase):
     def testgetUSerInvalidPassword(self):
         hashedPAssword = self.pm.hashPassword("senha_correta")
         self.dbSession.execute(text("""
-            INSERT INTO users (uuid, username, usertype, passwordcrypt) 
-            VALUES ('uuid-test-456', 'matheus_test', 'admin', :pw)
+            INSERT INTO users (username, usertype, passwordcrypt) 
+            VALUES ('matheus_test', 'admin', :pw)
         """), {"pw": hashedPAssword})
         self.dbSession.commit()
 
