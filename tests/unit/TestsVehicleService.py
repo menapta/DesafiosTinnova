@@ -30,3 +30,26 @@ class TestsVehicleService(unittest.TestCase):
 
         self.assertEqual(len(result), 3)
         self.mockRepo.getAllVehicles.assert_called_once()
+
+
+    def testGetVehiclesByUUID(self):
+        fakeVehicle = {"id": 1, "brand_id": 1, "complement": "Corolla XEi 2.0 Flex 16V Aut. 2020", "year": 2020, "color": "Prata", "price": 15000000, "plate": "ABC1234"}
+        self.mockRepo.getVehicleByUUID.return_value = fakeVehicle
+
+        result = self.service.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result["plate"], "ABC1234")
+        self.mockRepo.getVehicleByUUID.assert_called_once_with("123e4567-e89b-12d3-a456-426614174000")
+
+    def testGetVehiclesByPrice(self):
+        fakeVehicles = [
+            {"id": 1, "brand_id": 1, "complement": "Corolla XEi 2.0 Flex 16V Aut. 2020", "year": 2020, "color": "Prata", "price": 15000000, "plate": "ABC1234"},
+            {"id": 2, "brand_id": 2, "complement": "F-150 Lariat 3.5 V6 EcoBoost 4x4 Aut. 2021", "year": 2021, "color": "Preta", "price": 30000000, "plate": "XYZ5678"}
+        ]
+        self.mockRepo.getVehiclesByPrice.return_value = fakeVehicles
+
+        result = self.service.getVehicleByPrice(10000000, 20000000)
+
+        self.assertEqual(len(result), 2)
+        self.mockRepo.getVehiclesByPrice.assert_called_once_with(10000000, 20000000)

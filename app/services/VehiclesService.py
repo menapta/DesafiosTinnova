@@ -16,3 +16,10 @@ class VehiclesService:
         logger.debug(f"VehiclesService: Fetching vehicles with offset: {offset} and limit: {limit}")
         return self.repository.getAllVehicles(offset, limit)
 
+    def getVehicleByUUID(self, uuid: str) -> Vehicle | None:
+        logger.debug(f"VehiclesService: Fetching vehicle with UUID: {uuid}")
+        return self.repository.getVehicleByUUID(uuid)
+    
+    def getVehicleByPrice(self, minPrice: int, maxPrice: int) -> list[Vehicle] | None:
+        logger.debug(f"VehiclesService: Fetching vehicles with price range: {minPrice} to {maxPrice}")
+        return self.repository.getVehiclesByPrice(minPrice, maxPrice)
