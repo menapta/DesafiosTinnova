@@ -6,9 +6,7 @@ CREATE TABLE IF NOT EXISTS users
     username VARCHAR(300) UNIQUE NOT NULL,
     passwordcrypt TEXT NOT NULL,
     usertype VARCHAR(50) NOT NULL,
-    datecreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    is_deleted BOOLEAN DEFAULT FALSE NOT NULL
 );
-
-INSERT INTO users (username, passwordcrypt, usertype) VALUES ('admin', '$2b$12$mBHZZAiUYZak2F5.RHI11OF2L2IeT9ytx7Y73Q18O1gtHoulxP7Bi', 'admin');
-INSERT INTO users (username, passwordcrypt, usertype) VALUES ('teobaldo', '$2b$12$mBHZZAiUYZak2F5.RHI11OF2L2IeT9ytx7Y73Q18O1gtHoulxP7Bi', 'user');
 
