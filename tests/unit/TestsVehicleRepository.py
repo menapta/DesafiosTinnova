@@ -85,3 +85,17 @@ class TestsVehicleRepository(unittest.TestCase):
         repo = VehiclesRepository(self.dbSession)
         vehicles: list[Vehicle] = repo.getVehiclesByPrice(20000000, 35000000)
         self.assertEqual(len(vehicles), 2)
+
+
+    def testGetVehicleByYearBrandColorRepo(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (brand_id, complement, year, color, price, plate) values
+        (1, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234'),
+        (2, 'F-150 Lariat 3.5 V6 EcoBoost 4x4 Aut. 2021', 2021, 'Preta', 30000000, 'XYZ5678'),
+        (3, 'Silverado LTZ 5.3 V8 FlexPower Aut. 2018', 2018, 'Branca', 25000000, 'DEF9876')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicles: list[Vehicle] = repo.getVehiclesByBrandYearColor(brand="Toyota", year=2020, color="Prata")
+        self.assertEqual(len(vehicles), 1)
+        self.assertEqual(vehicles[0].plate, "ABC1234")

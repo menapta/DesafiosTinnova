@@ -18,19 +18,6 @@ logger = Logger.createLogger(__name__)
 
 client = TestClient(app)
 
-# def getDb():
-#     db = MagicMock()
-#     yield db
-
-# TEST_DATABASE_URL = "postgresql+psycopg2://postgres:postgres@localhost:5432/db_test"
-
-# engine = create_engine(TEST_DATABASE_URL)
-# TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# current_file = Path(__file__).resolve()
-# root_dir = current_file.parents[2]
-# sqlPathVehicles = root_dir / "init-scripts" / "2createVehiclesTable.sql"
-
 responseVehicles =[
     Vehicle(
         uuid="efcf0467-70df-4cc8-b6b8-682a8b2040ad", 
@@ -54,31 +41,35 @@ responseVehicles =[
     )
 ]
 
+
+responseVehiclesToyota =[
+    Vehicle(
+        uuid="efcf0467-70df-4cc8-b6b8-682a8b2040ad", 
+        brand_name="Toyota", 
+        complement="Corolla", 
+        year=2020, 
+        color="Red", 
+        price=1500000,
+        plate="ABC1234",
+        date_created="2023-01-01T00:00:00",
+    ),
+    Vehicle(
+        uuid="a123e4567-e89b-12d3-a456-426614174000", 
+        brand_name="Toyota", 
+        complement="Etios", 
+        year=2020, 
+        color="Red", 
+        price=2000000,
+        plate="XYZ5678",
+        date_created="2023-01-01T00:00:01",
+    )
+]
+
 class TestsVehiclesController: 
-    # @classmethod
-    # def setUpClass(cls):
-    #     self.mockRepo = MagicMock(spec=VehiclesRepository)
-    #     self.service = VehiclesService(self.mockRepo)
-        # with open(sqlPathVehicles, "r") as f:
-        #     sql_script = f.read()
-
-        # with engine.connect() as conn:
-        #     with conn.begin():
-        #         conn.execute(text(sql_script))
-        # logger.info(f"Database schema synchronized from SQL file. {sqlPathVehicles}")
-
     def setUp(self):
         self.mockRepo = MagicMock(spec=VehiclesRepository)
         self.service = VehiclesService(self.mockRepo)
-        # self.dbSession = TestingSessionLocal()
-        # self.dbSession.execute(text("TRUNCATE TABLE vehicles RESTART IDENTITY CASCADE"))
-        # self.dbSession.execute(text("TRUNCATE TABLE brands RESTART IDENTITY CASCADE"))
-        # self.dbSession.commit()
-        # # app.dependency_overrides[getDB] = getDb
 
-    # def tearDown(self): 
-    #     self.dbSession.close()
-    #     # app.dependency_overrides.clear()
     def tearDown(self):
         app.dependency_overrides.clear()
 
@@ -182,3 +173,16 @@ class TestsVehiclesController:
         logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
 
         assert response.status_code == 400
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.getVehiclesByBrandYearColor")
+    def testGetVehiclesByBrandYearColor(self, mockGetVehiclesByBrandYearColor):
+        mockUserData = {"user": "test_user", "type": "user"}
+        app.dependency_overrides[getAuthData] = lambda: mockUserData
+
+        mockGetVehiclesByBrandYearColor.return_value = responseVehiclesToyota
+
+        response = client.get("/veiculos?ano=2020&marca=Toyota&cor=Red")
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 200
+        assert len(response.json()["vehicles"]) == 2

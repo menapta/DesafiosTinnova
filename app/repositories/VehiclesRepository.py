@@ -134,3 +134,49 @@ class VehiclesRepository:
 
         logger.debug(f"Fetched {len(vehicles)} vehicles with price between {minPrice} and {maxPrice}")
         return vehicles
+
+    def getVehiclesByBrandYearColor(self, brand: str | None, year: int | None, color: str | None, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
+        logger.info(f"Fetching vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}, Offset: {offset}, Limit: {limit}")
+        query = text("""
+            SELECT 
+                     v.uuid AS uuid, 
+                     b.brand_name AS brand_name, 
+                     v.complement AS complement, 
+                     v.year AS year, 
+                     v.color AS color, 
+                     v.plate AS plate,
+                     v.price AS price, 
+                     v.date_created AS date_created
+            FROM vehicles v
+            JOIN brands b ON v.brand_id = b.id
+            WHERE (b.brand_name = :brand)
+              AND (v.year = :year)
+              AND (v.color = :color)
+            ORDER BY v.date_created DESC             
+            OFFSET :offset
+            LIMIT :limit
+        """)
+        result = self.db.execute(query, {"brand": brand, "year": year, "color": color, "offset": offset, "limit": limit}).fetchall()
+        logger.debug(f"Query executed with filters - Brand: {brand}, Year: {year}, Color: {color}. Number of vehicles fetched: {len(result)}")
+
+        if result is None:
+            logger.debug(f"No vehicles found with filters - Brand: {brand}, Year: {year}, Color: {color}")
+            return None
+        
+        vehicles = []
+        for cell in result:
+            logger.debug(f"Processing vehicle: {cell}")
+            vehicle = Vehicle(
+                uuid=str(cell[0]),
+                brand_name=cell[1],
+                complement=cell[2],
+                year=cell[3],
+                color=cell[4],
+                plate=cell[5],
+                price=cell[6],
+                date_created=str(cell[7])
+            )
+            vehicles.append(vehicle)
+
+        logger.debug(f"Fetched {len(vehicles)} vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}")
+        return vehicles

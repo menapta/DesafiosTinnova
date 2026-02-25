@@ -34,8 +34,15 @@ def getVehicles(
         maxPrice = int(filters.maxPreco*100)
         vehicles: list[Vehicle] | None = service.getVehicleByPrice(minPrice, maxPrice, offset, limit)
     
-    # if  any([ano, marca, cor ]) and not any([minPreco, maxPreco]):
-    #     logger.info(f"getting vehicles with filters: ano={ano}, marca={marca}, cor={cor}")
+    if  any([filters.ano, filters.marca, filters.cor ]): # and not any([filters.minPreco, filters.maxPreco]):
+        logger.info(f"getting vehicles with filters: ano={filters.ano}, marca={filters.marca}, cor={filters.cor}")
+        vehicles: list[Vehicle] | None = service.getVehiclesByBrandYearColor(
+            year=filters.ano,
+            brand=filters.marca,
+            color=filters.cor,
+            offset=offset,
+            limit=limit
+        )
 
 
     if not any([filters.ano, filters.marca, filters.cor, filters.minPreco, filters.maxPreco]):

@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from app.repositories.VehiclesRepository import VehiclesRepository
 from app.services.VehiclesService import VehiclesService
 from app import Logger
+from app.models.Vehicle import Vehicle
 
 logger = Logger.createLogger(__name__)
 
@@ -53,3 +54,16 @@ class TestsVehicleService(unittest.TestCase):
 
         self.assertEqual(len(result), 2)
         self.mockRepo.getVehiclesByPrice.assert_called_once_with(15000000, 40000000, 0, 20)
+
+
+    def testGetVehicleByYearBrandColorService(self):
+        fakeVehicles = [
+            {"uuid": 1, "brand_name": "Toyota", "complement": "Corolla XEi 2.0 Flex 16V Aut. 2020", "year": 2020, "color": "Prata", "price": 15000000, "plate": "ABC1234"},
+            {"uuid": 2, "brand_name": "Toyota", "complement": "F-150 Lariat 3.5 V6 EcoBoost 4x4 Aut. 2021", "year": 2021, "color": "Preta", "price": 30000000, "plate": "XYZ5678"}
+        ]
+        self.mockRepo.getVehiclesByBrandYearColor.return_value = fakeVehicles
+
+        result = self.service.getVehiclesByBrandYearColor(2020, "Toyota", "Prata",0,20)
+
+        self.assertEqual(len(result), 2)
+        self.mockRepo.getVehiclesByBrandYearColor.assert_called_once_with(2020, "Toyota", "Prata", 0, 20)

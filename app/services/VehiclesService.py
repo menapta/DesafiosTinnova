@@ -23,3 +23,7 @@ class VehiclesService:
     def getVehicleByPrice(self, minPrice: int, maxPrice: int, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
         logger.debug(f"VehiclesService: Fetching vehicles with price range: {minPrice} to {maxPrice}")
         return self.repository.getVehiclesByPrice(minPrice, maxPrice, offset, limit)
+    
+    def getVehiclesByBrandYearColor(self, brand: str | None, year: int | None, color: str | None, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
+        logger.debug(f"VehiclesService: Fetching vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}")
+        return self.repository.getVehiclesByBrandYearColor(brand, year, color, offset, limit)
