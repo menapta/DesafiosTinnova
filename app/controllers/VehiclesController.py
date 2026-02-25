@@ -70,6 +70,14 @@ def getVehicleByUUID(uuid: str, data: dict = Depends(getAuthData), db: Session =
     
     return {"vehicle": vehicle}
 
+@router.get("/veiculos/relatorios/por-marca")
+def getVehicleReportByBrand(data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
+    logger.info(f"Attempting to retrieve vehicle report by brand for user: {data['user']}")
+    repository = VehiclesRepository(db)
+    service = VehiclesService(repository)
+    report = service.getVehicleReportByBrand()
+    return {"report": report}
+
 # @router.get("/veiculos?minPreco={minPrice}&maxPreco={maxPrice}")
 # def getVehicleByPrice(minPrice: int, maxPrice: int, data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
 #     logger.info(f"Attempting to retrieve vehicles with price between {minPrice} and {maxPrice} for user: {data['user']}")

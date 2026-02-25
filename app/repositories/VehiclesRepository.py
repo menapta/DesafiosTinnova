@@ -186,7 +186,7 @@ class VehiclesRepository:
         logger.debug(f"Fetched {len(vehicles)} vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}")
         return vehicles
     
-    def getReportbyBrand(self):
+    def getVehicleReportByBrand(self):
         logger.info("Fetching report by brand")
         query = text("""
             SELECT 
@@ -208,9 +208,22 @@ class VehiclesRepository:
             logger.debug(f"Processing brand report: {cell}")
             report.append({
                 "brand_name": cell[0],
-                "total_vehicles": cell[1],
-                "average_price": cell[2]
+                "total_vehicles": cell[1]
             })
 
         logger.debug(f"Fetched report for {len(report)} brands")
         return report
+    
+
+
+    def setVehicleAsDeleted(self, uuid: str) -> bool:
+        logger.info(f"Setting vehicle with UUID: {uuid} as deleted")
+        query = text("""
+            UPDATE vehicles
+            SET is_deleted = true
+            WHERE uuid = :uuid
+        """)
+        result = self.db.execute(query, {"uuid": uuid})
+        self.db.commit()
+        logger.debug(f"Vehicle with UUID: {uuid} set as deleted, rows affected: {result.rowcount}")
+        return result.rowcount > 0

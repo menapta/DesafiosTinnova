@@ -27,3 +27,7 @@ class VehiclesService:
     def getVehiclesByBrandYearColor(self, brand: str | None, year: int | None, color: str | None, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
         logger.debug(f"VehiclesService: Fetching vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}")
         return self.repository.getVehiclesByBrandYearColor(brand, year, color, offset, limit)
+
+    def getVehicleReportByBrand(self) -> list[dict] | None:
+        logger.debug("VehiclesService: Fetching vehicle report by brand")
+        return self.repository.getVehicleReportByBrand()

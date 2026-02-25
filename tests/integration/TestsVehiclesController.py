@@ -186,3 +186,20 @@ class TestsVehiclesController:
 
         assert response.status_code == 200
         assert len(response.json()["vehicles"]) == 2
+
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.getVehicleReportByBrand")
+    def testGetVehicleReportByBrand(self, mockGetVehicleReportByBrand):
+        mockUserData = {"user": "test_user", "type": "user"}
+        app.dependency_overrides[getAuthData] = lambda: mockUserData
+
+        mockGetVehicleReportByBrand.return_value = [
+            {"brand_name": "Toyota", "total_vehicles": 10},
+            {"brand_name": "Honda", "total_vehicles": 5}
+        ]
+
+        response = client.get("/veiculos/relatorios/por-marca")
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 200
+        assert len(response.json()["report"]) == 2

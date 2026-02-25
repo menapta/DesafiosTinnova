@@ -67,3 +67,15 @@ class TestsVehicleService(unittest.TestCase):
 
         self.assertEqual(len(result), 2)
         self.mockRepo.getVehiclesByBrandYearColor.assert_called_once_with(2020, "Toyota", "Prata", 0, 20)
+    
+    def testGetVehicleReportByBrand(self):
+        fakeReport = [
+            {"brand_name": "Toyota", "total_vehicles": 10},
+            {"brand_name": "Ford", "total_vehicles": 5}
+        ]
+        self.mockRepo.getVehicleReportByBrand.return_value = fakeReport
+
+        result = self.service.getVehicleReportByBrand()
+
+        self.assertEqual(len(result), 2)
+        self.mockRepo.getVehicleReportByBrand.assert_called_once()
