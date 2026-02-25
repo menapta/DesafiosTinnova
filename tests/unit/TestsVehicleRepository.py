@@ -1,5 +1,6 @@
 
 import os
+import time
 import unittest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -17,31 +18,32 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 current_file = Path(__file__).resolve()
 root_dir = current_file.parents[2]
-sql_path = root_dir / "init-scripts" / "2createVehiclesTable.sql"
+sqlPathVehicles = root_dir / "init-scripts" / "2createVehiclesTable.sql"
 
 class TestsVehicleRepository(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        with open(sql_path, "r") as f:
+        with open(sqlPathVehicles, "r") as f:
             sql_script = f.read()
 
         with engine.connect() as conn:
             with conn.begin():
                 conn.execute(text(sql_script))
-        logger.info(f"Database schema synchronized from SQL file. {sql_path}")
+        logger.info(f"Database schema synchronized from SQL file. {sqlPathVehicles}")
 
     def setUp(self):
         self.dbSession = TestingSessionLocal()
         self.dbSession.execute(text("TRUNCATE TABLE vehicles RESTART IDENTITY CASCADE"))
+        self.dbSession.execute(text("TRUNCATE TABLE brands RESTART IDENTITY CASCADE"))
         self.dbSession.commit()
+        # time.sleep(1)
 
     def tearDown(self):
-        self.dbSession.execute(text("TRUNCATE TABLE vehicles RESTART IDENTITY CASCADE"))
         self.dbSession.close()
 
     def testFilePath(self):
-        logger.info(f"Database schema synchronized from SQL file. {sql_path}")
-        self.assertTrue(os.path.isfile(sql_path), f"SQL file not found at path: {sql_path}")
+        logger.info(f"Database schema synchronized from SQL file. {sqlPathVehicles}")
+        self.assertTrue(os.path.isfile(sqlPathVehicles), f"SQL file not found at path: {sqlPathVehicles}")
 
     def testGetAllVehiclesEmpty(self):
         repo = VehiclesRepository(self.dbSession)
@@ -50,6 +52,7 @@ class TestsVehicleRepository(unittest.TestCase):
 
 
     def testGetAllVehiclesWithContent(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
         self.dbSession.execute(text("""INSERT INTO vehicles (brand_id, complement, year, color, price, plate) values
         (1, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234'),
         (2, 'F-150 Lariat 3.5 V6 EcoBoost 4x4 Aut. 2021', 2021, 'Preta', 30000000, 'XYZ5678'),
@@ -59,3 +62,26 @@ class TestsVehicleRepository(unittest.TestCase):
         repo = VehiclesRepository(self.dbSession)
         vehicles: list[Vehicle] = repo.getAllVehicles()
         self.assertEqual(len(vehicles), 3)
+
+    def testGetVehiclesByUUID(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (uuid, brand_id, complement, year, color, price, plate) values
+        ('123e4567-e89b-12d3-a456-426614174000', 1, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNotNone(vehicle)
+        self.assertEqual(vehicle.plate, "ABC1234")
+
+    def testGetVehiclesByPriceRange(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (brand_id, complement, year, color, price, plate) values
+        (1, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234'),
+        (2, 'F-150 Lariat 3.5 V6 EcoBoost 4x4 Aut. 2021', 2021, 'Preta', 30000000, 'XYZ5678'),
+        (3, 'Silverado LTZ 5.3 V8 FlexPower Aut. 2018', 2018, 'Branca', 25000000, 'DEF9876')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicles: list[Vehicle] = repo.getVehiclesByPrice(20000000, 35000000)
+        self.assertEqual(len(vehicles), 2)
