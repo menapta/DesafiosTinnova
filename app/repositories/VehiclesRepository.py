@@ -235,6 +235,33 @@ class VehiclesRepository:
         logger.debug(f"Vehicle inserted successfully, rows affected: {result.rowcount}")
         return result.rowcount == 1
 
+
+    def updateCompleteVehicle(self, uuid: str, vehicleData: InsertVehicle) -> bool:
+        logger.info(f"Updating vehicle with UUID: {uuid}")
+        query = text("""
+            UPDATE vehicles
+            SET brand_id = :brand_id,
+                complement = :complement,
+                year = :year,
+                color = :color,
+                price = :price,
+                plate = :plate
+            WHERE uuid = :uuid
+              AND is_deleted = false
+        """)
+        result = self.db.execute(query, {
+            "brand_id": vehicleData.brand_id,
+            "complement": vehicleData.complement,
+            "year": vehicleData.year,
+            "color": vehicleData.color,
+            "price": vehicleData.price,
+            "plate": vehicleData.plate,
+            "uuid": uuid
+        })
+        self.db.commit()
+        logger.debug(f"Vehicle with UUID: {uuid} updated successfully, rows affected: {result.rowcount}")
+        return result.rowcount == 1
+
     # def setVehicleAsDeleted(self, uuid: str) -> bool:
     #     logger.info(f"Setting vehicle with UUID: {uuid} as deleted")
     #     query = text("""

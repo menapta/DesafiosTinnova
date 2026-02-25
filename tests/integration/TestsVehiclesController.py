@@ -223,3 +223,64 @@ class TestsVehiclesController:
 
         assert response.status_code == 200
         assert response.json()["message"] == "Vehicle created successfully!"
+
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.createVehicle")
+    def testCreateVehicleNotAllowed(self, mockCreateVehicle):
+        mockAdminData = {"user": "test_admin", "type": "user"}
+        app.dependency_overrides[getAuthData] = lambda: mockAdminData
+
+        mockCreateVehicle.return_value = True
+
+        response = client.post("/veiculos", json={
+            "brand_id": 1,
+            "complement": "Corolla",
+            "year": 2020,
+            "color": "Red",
+            "price": 1500000,
+            "plate": "ABC2534"
+        })
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 403
+
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.updateCompleteVehicle")
+    def testUpdateCompleteVehicle(self, mockUpdateCompleteVehicle):
+        mockAdminData = {"user": "test_admin", "type": "admin"}
+        app.dependency_overrides[getAuthData] = lambda: mockAdminData
+
+        mockUpdateCompleteVehicle.return_value = True
+
+        response = client.put("/veiculos/123e4567-e89b-12d3-a456-426614174000", json={
+            "brand_id": 1,
+            "complement": "Corolla",
+            "year": 2020,
+            "color": "Red",
+            "price": 1500000,
+            "plate": "ABC2534"
+        })
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 200
+        assert response.json()["message"] == "Vehicle updated successfully!"
+
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.updateCompleteVehicle")
+    def testUpdateCompleteVehicleNotAdmin(self, mockUpdateCompleteVehicle):
+        mockUserData = {"user": "test_user", "type": "user"}
+        app.dependency_overrides[getAuthData] = lambda: mockUserData
+
+        mockUpdateCompleteVehicle.return_value = True
+
+        response = client.put("/veiculos/123e4567-e89b-12d3-a456-426614174000", json={
+            "brand_id": 1,
+            "complement": "Corolla",
+            "year": 2020,
+            "color": "Red",
+            "price": 1500000,
+            "plate": "ABC2534"
+        })
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 403

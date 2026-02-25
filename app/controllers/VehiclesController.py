@@ -97,3 +97,18 @@ def createVehicle(vehicleData: InsertVehicle, data: dict = Depends(adminAuthData
     return {"message": "Vehicle created successfully!"}
 
 
+@router.put("/veiculos/{uuid}")
+def updateCompleteVehicle(uuid: str, vehicleData: InsertVehicle, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+    logger.info(f"Attempting to update vehicle with UUID: {uuid} using data: {vehicleData} for admin user: {data['user']}")
+    repository = VehiclesRepository(db)
+    service = VehiclesService(repository)
+    success = service.updateCompleteVehicle(uuid, vehicleData)
+
+    if not success:
+        logger.warning(f"Failed to update vehicle with UUID: {uuid} using data: {vehicleData}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to update vehicle! {}"
+        )
+    logger.info(f"Vehicle with UUID: {uuid} updated successfully using data: {vehicleData}")
+    return {"message": "Vehicle updated successfully!"}

@@ -4,6 +4,7 @@ import time
 import unittest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from app.models.InsertVehicle import InsertVehicle
 from app.repositories.VehiclesRepository import VehiclesRepository
 from app import Logger
 from app.models.Vehicle import Vehicle
@@ -120,6 +121,31 @@ class TestsVehicleRepository(unittest.TestCase):
         repo = VehiclesRepository(self.dbSession)
         vehicles: list[Vehicle] = repo.getVehicleReportByBrand()
         self.assertEqual(len(vehicles), 3)
+
+    def testUpdateCompleteVehicle(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (uuid, brand_id, complement, year, color, price, plate) values
+        ('123e4567-e89b-12d3-a456-426614174000', 2, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNotNone(vehicle)
+        self.assertEqual(vehicle.plate, "ABC1234")
+        updatedVehicle = InsertVehicle(
+            brand_id=1,
+            complement="novo complement",
+            year=vehicle.year,
+            color=vehicle.color,
+            price=vehicle.price,
+            plate="NEWPLATE"
+        )
+
+        repo.updateCompleteVehicle("123e4567-e89b-12d3-a456-426614174000", updatedVehicle)
+        newData: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertEqual(newData.complement, "novo complement")
+        self.assertEqual(newData.brand_name, "Toyota")
+        self.assertEqual(newData.plate, "NEWPLATE")
 
     # def testInsertVehicle(self):
     #     self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))

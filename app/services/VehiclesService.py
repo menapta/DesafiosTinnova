@@ -36,3 +36,7 @@ class VehiclesService:
     def createVehicle(self, vehicleData: InsertVehicle) -> bool | None:
         logger.debug(f"VehiclesService: Creating vehicle with data: {vehicleData}")
         return self.repository.createVehicle(vehicleData)
+    
+    def updateCompleteVehicle(self, uuid: str, vehicleData: InsertVehicle) -> bool | None:
+        logger.debug(f"VehiclesService: Updating vehicle with UUID: {uuid} using data: {vehicleData}")
+        return self.repository.updateCompleteVehicle(uuid, vehicleData)

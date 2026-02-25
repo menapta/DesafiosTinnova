@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from app.models.InsertVehicle import InsertVehicle
 from app.repositories.VehiclesRepository import VehiclesRepository
 from app.services.VehiclesService import VehiclesService
 from app import Logger
@@ -79,3 +80,22 @@ class TestsVehicleService(unittest.TestCase):
 
         self.assertEqual(len(result), 2)
         self.mockRepo.getVehicleReportByBrand.assert_called_once()
+
+    def testUpdateCompleteVehicle(self):
+        fakeVehicle = {"id": 1, "brand_id": 1, "complement": "Corolla XEi 2.0 Flex 16V Aut. 2020", "year": 2020, "color": "Prata", "price": 15000000, "plate": "ABC1234"}
+        self.mockRepo.getVehicleByUUID.return_value = fakeVehicle
+
+        updatedVehicle = InsertVehicle(
+            brand_id=1,
+            complement="novo complement",
+            year=2020,
+            color="Prata",
+            price=15000000,
+            plate="NEWPLATE"
+        )
+        self.mockRepo.updateCompleteVehicle.return_value = True
+
+        result = self.service.updateCompleteVehicle("123e4567-e89b-12d3-a456-426614174000", updatedVehicle)
+
+        self.assertTrue(result)
+        self.mockRepo.updateCompleteVehicle.assert_called_once_with("123e4567-e89b-12d3-a456-426614174000", updatedVehicle)
