@@ -1,0 +1,27 @@
+
+CREATE TABLE IF NOT EXISTS brands
+(   
+    id SERIAL PRIMARY KEY NOT NULL,
+    uuid UUID DEFAULT gen_random_uuid() NOT NULL,
+    brand_name VARCHAR(300) UNIQUE NOT NULL,
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+
+CREATE TABLE IF NOT EXISTS vehicles
+(   
+    id SERIAL PRIMARY KEY NOT NULL,
+    uuid UUID DEFAULT gen_random_uuid() NOT NULL,
+    brand_id INTEGER NOT NULL,
+    complement VARCHAR(10000),
+    year INT NOT NULL CHECK (year >= 1886 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)),--adicionar +1
+    color VARCHAR(200),
+    plate VARCHAR(50) UNIQUE NOT NULL,
+    price BIGINT,
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE NOT NULL,
+
+    CONSTRAINT fk_brand FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE RESTRICT
+);
+

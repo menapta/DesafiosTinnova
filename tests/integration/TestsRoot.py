@@ -5,13 +5,13 @@ from app.DBConn import getDB
 
 client = TestClient(app)
 
-def get_db_mock():
+def getDBMock():
     db = MagicMock()
     yield db
     
 class TestsRoot: 
     def setUp(self):
-        app.dependency_overrides[getDB] = get_db_mock
+        app.dependency_overrides[getDB] = getDBMock
 
     def tearDown(self):
         app.dependency_overrides.clear()

@@ -11,7 +11,7 @@ services:
       - '5432:5432'
     volumes:
       - ./db:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d/ # O script de criação do db_test vai aqui
+      - ./init-scripts:/docker-entrypoint-initdb.d/ 
     healthcheck: 
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

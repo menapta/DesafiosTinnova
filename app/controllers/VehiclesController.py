@@ -11,7 +11,7 @@ from ..models.Vehicle import Vehicle
 logger = Logger.createLogger(__name__)
 router = APIRouter()
 
-@router.get("/vehicles")
+@router.get("/veiculos")
 def getVehicles(data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to retrieve vehicles for user: {data['user']}")
 

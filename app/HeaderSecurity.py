@@ -14,13 +14,13 @@ def getAuthData(token: str = Depends(oauth2_scheme)):
     except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido ou expirado"
+            detail="Invalid Token !"
         )
 
 def adminAuthData(data: dict = Depends(getAuthData)):
     if data.get("type") != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Acesso restrito a administradores"
+            detail="Restrict to Admin users !"
         )
     return data
