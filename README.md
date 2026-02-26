@@ -20,6 +20,8 @@ pip install -r requirements.txt
 ## INTRO
 Para conseguir a documentação swagger, acessar http://127.0.0.1:8000/docs ou buscar em um dos arquivos dentro da pasta 'documents' que contém openapi.json e swagger.yaml
 
+As colections usadas para testes no Postamn se encontram no arquivo 0000000000Tinnova.postman_collection.json
+
 ## EXECUÇÔES
 Passos para ralizar as execuções
 
