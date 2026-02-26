@@ -1,0 +1,437 @@
+{
+	"info": {
+		"_postman_id": "6f468118-243f-4aeb-a849-7c693314ecb0",
+		"name": "0000000000Tinnova",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31731004"
+	},
+	"item": [
+		{
+			"name": "login admin",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"username\":\"administrador\",\r\n\"password\":\"minhasenha123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/auth/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"username\":\"usuario01\",\r\n\"password\":\"minhasenha123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/auth/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getVehicles",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "get veiculos por preco",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos?minPreco=10000&maxPreco=200000",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos"
+					],
+					"query": [
+						{
+							"key": "minPreco",
+							"value": "10000"
+						},
+						{
+							"key": "maxPreco",
+							"value": "200000"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "get veiculos ano marca e cor",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos?ano=2023&marca=Nissan&cor=Azul",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos"
+					],
+					"query": [
+						{
+							"key": "ano",
+							"value": "2023"
+						},
+						{
+							"key": "marca",
+							"value": "Nissan"
+						},
+						{
+							"key": "cor",
+							"value": "Azul"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "get veiculos por id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos/5db6f9f3-9dcd-407c-8253-1f4f80340583",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos",
+						"5db6f9f3-9dcd-407c-8253-1f4f80340583"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "create veiculos por id Copy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"complement\": \"CVT\",\r\n    \"year\": 2023,\r\n    \"color\": \"Verde\",\r\n    \"plate\": \"TXY7788\",\r\n    \"brand_id\":3,\r\n    \"price\":15000000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "update veiculos por id",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"complement\": \"CVaT\",\r\n    \"year\": 20282,\r\n    \"color\": \"Verde\",\r\n    \"plate\": a,\r\n    \"brand_id\":3,\r\n    \"price\":15000000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos/5db6f9f3-9dcd-407c-8253-1f4f80340583",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos",
+						"5db6f9f3-9dcd-407c-8253-1f4f80340583"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "update veiculos por id Copy",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"complement\": \"CVaT\",\r\n    \"year\": 2028,\r\n    \"color\": \"Verde\",\r\n    \"brand_id\":3,\r\n    \"price\":15000000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos/d81d36c5-1baa-4938-90ec-0fcf2111b526",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos",
+						"d81d36c5-1baa-4938-90ec-0fcf2111b526"
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "delete veiculos por id",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW5pc3RyYWRvciIsInR5cGUiOiJhZG1pbiIsImV4cCI6MTc3MjMzNjQ5M30.DDK-Cj4EsTHxcOfPNwKMciJzT3bTxI7SNHaeflMD_N8"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/veiculos/5db6f9f3-9dcd-407c-8253-1f4f80340583?hardDelete=false",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"veiculos",
+						"5db6f9f3-9dcd-407c-8253-1f4f80340583"
+					],
+					"query": [
+						{
+							"key": "hardDelete",
+							"value": "false"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl --location 'http://127.0.0.1:8000/dashboard-geral' \\\r\n--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVvYmFsZG8iLCJ0eXBlIjoidXNlciIsImV4cCI6MTc3MTk4OTE2NX0.t_zW964LOJaavHBDbQxcK0sHil1Lsm7O7ildqPnrwfs' \\\r\n--header 'Content-Type: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "Documentação Swagger OpenAPI",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/docs",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"docs"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

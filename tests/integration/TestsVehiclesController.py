@@ -310,3 +310,35 @@ class TestsVehiclesController:
         logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
 
         assert response.status_code == 403
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.updatePatchVehicle")
+    def testUpdatePatchVehicle(self, mockUpdatePatchVehicle):
+        mockAdminData = {"user": "test_admin", "type": "admin"}
+        app.dependency_overrides[getAuthData] = lambda: mockAdminData
+
+        mockUpdatePatchVehicle.return_value = True
+
+        response = client.patch("/veiculos/123e4567-e89b-12d3-a456-426614174000", json={
+            "complement": "novo complement",
+            "price": 20000000
+        })
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 200
+        assert response.json()["message"] == "Vehicle partially updated successfully!"
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.updatePatchVehicle")
+    def testUpdatePatchVehicleNoPermission(self, mockUpdatePatchVehicle):
+        mockUserData = {"user": "test_user", "type": "user"}
+        app.dependency_overrides[getAuthData] = lambda: mockUserData
+
+        mockUpdatePatchVehicle.return_value = True
+
+        response = client.patch("/veiculos/123e4567-e89b-12d3-a456-426614174000", json={
+            "complement": "novo complement",
+            "price": 20000000
+        })
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 403
+

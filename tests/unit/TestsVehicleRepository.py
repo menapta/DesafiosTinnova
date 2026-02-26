@@ -173,3 +173,32 @@ class TestsVehicleRepository(unittest.TestCase):
         repo.deleteVehicle("123e4567-e89b-12d3-a456-426614174000", hardDelete=True)
         deletedVehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
         self.assertIsNone(deletedVehicle)
+
+    def testPatchVehicleWithNewComplement(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (uuid, brand_id, complement, year, color, price, plate) values
+        ('123e4567-e89b-12d3-a456-426614174000', 2, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNotNone(vehicle)
+        updatedData = {"complement": "complemento atualizado", "price": 20000000}
+        repo.updatePatchVehicle("123e4567-e89b-12d3-a456-426614174000", updatedData)
+        updatedVehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertEqual(updatedVehicle.complement, "complemento atualizado")
+        self.assertEqual(updatedVehicle.price_dolar_cents, 20000000)
+
+    def testPatchVehicleWithExistingPlate(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (uuid, brand_id, complement, year, color, price, plate) values
+        ('123e4567-e89b-12d3-a456-426614174000', 2, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234'),
+        ('223e4567-e89b-12d3-a456-426614174000', 1, 'F-150 Lariat 3.5 V6 EcoBoost 4x4 Aut. 2021', 2021, 'Preta', 30000000, 'XYZ5678')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNotNone(vehicle)
+        updatedData = {"plate": "XYZ5678"}
+        with self.assertRaises(Exception):
+            repo.updatePatchVehicle("123e4567-e89b-12d3-a456-426614174000", updatedData)

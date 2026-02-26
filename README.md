@@ -18,8 +18,10 @@ pip install -r requirements.txt
 
 
 ## INTRO
+Para conseguir a documentação swagger, acessar http://127.0.0.1:8000/docs ou buscar em um dos arquivos dentro da pasta 'documents' que contém openapi.json e swagger.yaml
 
 ## EXECUÇÔES
+Passos para ralizar as execuções
 
 #### Execução de testes geral para unitários
 python -m unittest discover -s tests -p "Tests*.py"
@@ -27,17 +29,23 @@ python -m unittest discover -s tests -p "Tests*.py"
 #### Execução de testes geral para integração
 python -m pytest tests/integration/ -o "python_files=Tests*.py" -v
 
-
-python -m unittest discover -s tests tests/unit/ -v
-
 #### Execução de testes individuais para unitários
-python -m pytest tests/integration/TestsLoginController.py -v  
+python -m unittest tests/unit/TestsVehicleRepository.py -v  
+python -m unittest tests/unit/TestsVehicleService.py -v  
+python -m unittest tests/unit/TestsPasswordManager.py -v  
+python -m unittest tests/unit/TestsLoginService.py -v  
+python -m unittest tests/unit/TestsLoginRepositoriy.py -v  
+
 
 #### Execução de testes individuais para integração
-python -m unittest tests/unit/TestsVehicleRepository.py -v
+python -m pytest tests/integration/TestsVehiclesController.py -v
+python -m pytest tests/integration/TestsLoginController.py -v
+python -m pytest tests/integration/TestsRoot.py -v
 
+### Executar o docker
+docker-compose up
 
-## Execução do APP 
+### Execução do APP 
 uvicorn app.main:app --reload 
 
 ### Para ver logs

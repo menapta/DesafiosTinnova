@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from app.models.UpdateVehiclePatch import UpdateVehiclePatch
 from app.models.InsertVehicle import InsertVehicle
 from app.repositories.VehiclesRepository import VehiclesRepository
 from app.services.VehiclesService import VehiclesService
@@ -106,3 +107,18 @@ class TestsVehicleService(unittest.TestCase):
         result = self.service.deleteVehicle("123e4567-e89b-12d3-a456-426614174000")
         self.assertTrue(result)
         self.mockRepo.deleteVehicle.assert_called_once_with("123e4567-e89b-12d3-a456-426614174000", False)
+
+    def testUpdatePatchVehicle(self):
+        fakeVehicle = {"id": 1, "brand_id": 1, "complement": "Corolla XEi 2.0 Flex 16V Aut. 2020", "year": 2020, "color": "Prata", "price": 15000000, "plate": "ABC1234"}
+        self.mockRepo.getVehicleByUUID.return_value = fakeVehicle
+
+        updatedData = UpdateVehiclePatch(
+            complement="novo complement",
+            price=20000000
+        )
+        self.mockRepo.updatePatchVehicle.return_value = True
+
+        result = self.service.updatePatchVehicle("123e4567-e89b-12d3-a456-426614174000", updatedData)
+
+        self.assertTrue(result)
+        self.mockRepo.updatePatchVehicle.assert_called_once_with("123e4567-e89b-12d3-a456-426614174000", updatedData)

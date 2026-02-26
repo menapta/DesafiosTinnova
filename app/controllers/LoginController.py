@@ -34,13 +34,7 @@ def login(userData: LoginRequest, db: Session = Depends(getDB)):
     repository = LoginRepository(db)
     service = LoginService(repository)
     
-    # if userData.username == None or userData.password == None:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST,
-    #         detail="Fields 'userName' and 'password' are required!"
-    #     )
-    
-    
+
     user: UserDB | None = service.login(userData.username, userData.password)
 
     
@@ -52,7 +46,7 @@ def login(userData: LoginRequest, db: Session = Depends(getDB)):
     logger.debug(f"Repository for user: {user.username}")
         
     token = jwt.encode(
-        {"user": user.username,"type": user.usertype, "exp": datetime.utcnow() + timedelta(minutes=30)},
+        {"user": user.username,"type": user.usertype, "exp": datetime.utcnow() + timedelta(minutes=4320)},
         SECRET_KEY,
         algorithm="HS256"
     )

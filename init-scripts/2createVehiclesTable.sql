@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS vehicles
     uuid UUID DEFAULT gen_random_uuid() NOT NULL,
     brand_id INTEGER NOT NULL,
     complement VARCHAR(10000),
-    year INT NOT NULL CHECK (year >= 1886 AND year <= EXTRACT(YEAR FROM CURRENT_DATE)),
+    year INT NOT NULL CHECK (year >= 1886 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 1),
     color VARCHAR(200),
     plate VARCHAR(50) UNIQUE NOT NULL,
     price BIGINT,

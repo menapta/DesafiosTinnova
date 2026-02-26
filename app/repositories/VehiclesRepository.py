@@ -2,8 +2,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from app.models.InsertVehicle import InsertVehicle
+from app.models.UpdateVehiclePatch import UpdateVehiclePatch
 from .. import Logger
 from ..models.Vehicle import Vehicle
+from sqlalchemy.exc import IntegrityError
+from app.exceptions.base import BusinessException, EntityNotFoundException, DuplicateEntryException, InvalidYearException
 
 logger = Logger.createLogger(__name__)
 
@@ -216,49 +219,78 @@ class VehiclesRepository:
     
 
     def createVehicle(self, vehicle: InsertVehicle) -> bool:
-        logger.info(f"Inserting new vehicle with UUID: {vehicle.uuid}")
-        query = text("""
-            INSERT INTO vehicles (brand_id, complement, year, color, price, plate)
-            VALUES (:brand_id, :complement, :year, :color, :price, :plate)
-        """)
-        result = self.db.execute(query, {
-            "brand_id": vehicle.brand_id,
-            "complement": vehicle.complement,
-            "year": vehicle.year,
-            "color": vehicle.color,
-            "price": vehicle.price,
-            "plate": vehicle.plate
-        })
-        self.db.commit()
-        logger.debug(f"Vehicle inserted successfully, rows affected: {result.rowcount}")
-        return result.rowcount == 1
+        try:
+            logger.info(f"Inserting new vehicle with plate: {vehicle.plate}")
+            query = text("""
+                INSERT INTO vehicles (brand_id, complement, year, color, price, plate)
+                VALUES (:brand_id, :complement, :year, :color, :price, :plate)
+            """)
+            result = self.db.execute(query, {
+                "brand_id": vehicle.brand_id,
+                "complement": vehicle.complement,
+                "year": vehicle.year,
+                "color": vehicle.color,
+                "price": vehicle.price,
+                "plate": vehicle.plate
+            })
+            self.db.commit()
+            logger.debug(f"Vehicle inserted successfully, rows affected: {result.rowcount}")
+            return result.rowcount == 1
+        except IntegrityError as e:
+            self.db.rollback() 
+            errorMsg = str(e.orig)
+            if "vehicles_year_check" in errorMsg:
+                raise InvalidYearException("Invalid year.")
+            
+            if "vehicles_plate_key" in errorMsg:
+                logger.warning(f"Duplicate plate detected during update: {vehicle.plate}")
+                raise DuplicateEntryException(f"Placa '{vehicle.plate}' já existe para outro veículo.")
+
+            raise BusinessException(f"Integrity error in data: {e}")
+
 
 
     def updateCompleteVehicle(self, uuid: str, vehicleData: InsertVehicle) -> bool:
-        logger.info(f"Updating vehicle with UUID: {uuid}")
-        query = text("""
-            UPDATE vehicles
-            SET brand_id = :brand_id,
-                complement = :complement,
-                year = :year,
-                color = :color,
-                price = :price,
-                plate = :plate
-            WHERE uuid = :uuid
-              AND is_deleted = false
-        """)
-        result = self.db.execute(query, {
-            "brand_id": vehicleData.brand_id,
-            "complement": vehicleData.complement,
-            "year": vehicleData.year,
-            "color": vehicleData.color,
-            "price": vehicleData.price,
-            "plate": vehicleData.plate,
-            "uuid": uuid
-        })
-        self.db.commit()
-        logger.debug(f"Vehicle with UUID: {uuid} updated successfully, rows affected: {result.rowcount}")
-        return result.rowcount == 1
+        try:
+            logger.info(f"Updating vehicle with UUID: {uuid}")
+            query = text("""
+                UPDATE vehicles
+                SET brand_id = :brand_id,
+                    complement = :complement,
+                    year = :year,
+                    color = :color,
+                    price = :price,
+                    plate = :plate
+                WHERE uuid = :uuid
+                AND is_deleted = false
+            """)
+            result = self.db.execute(query, {
+                "brand_id": vehicleData.brand_id,
+                "complement": vehicleData.complement,
+                "year": vehicleData.year,
+                "color": vehicleData.color,
+                "price": vehicleData.price,
+                "plate": vehicleData.plate,
+                "uuid": uuid
+            })
+            
+            if result.rowcount == 0:
+                raise EntityNotFoundException(f"Veículo com UUID {uuid} não encontrado.")
+            logger.debug(f"Vehicle with UUID: {uuid} updated successfully, rows affected: {result.rowcount}")
+            self.db.commit()
+            return result.rowcount == 1
+        except IntegrityError as e:
+            self.db.rollback()
+            errorMsg = str(e.orig)
+            if "vehicles_year_check" in errorMsg:
+                raise InvalidYearException("Invalid year.")
+            
+            if "vehicles_plate_key" in errorMsg:
+                logger.warning(f"Duplicate plate detected during update: {vehicleData.plate}")
+                raise DuplicateEntryException(f"Placa '{vehicleData.plate}' já existe para outro veículo.")
+
+            raise BusinessException(f"Integrity error in data {e}")
+
     
     def deleteVehicle(self, uuid: str, hardDelete: bool = False) -> bool:
         logger.info(f"Deleting vehicle with UUID: {uuid}")
@@ -284,14 +316,44 @@ class VehiclesRepository:
         logger.debug(f"Vehicle with UUID: {uuid} deleted successfully, rows affected: {result.rowcount}")
         return result.rowcount == 1
 
-    # def setVehicleAsDeleted(self, uuid: str) -> bool:
-    #     logger.info(f"Setting vehicle with UUID: {uuid} as deleted")
-    #     query = text("""
-    #         UPDATE vehicles
-    #         SET is_deleted = true
-    #         WHERE uuid = :uuid
-    #     """)
-    #     result = self.db.execute(query, {"uuid": uuid})
-    #     self.db.commit()
-    #     logger.debug(f"Vehicle with UUID: {uuid} set as deleted, rows affected: {result.rowcount}")
-    #     return result.rowcount > 0
+    def updatePatchVehicle(self, uuid: str, vehicleData: UpdateVehiclePatch) -> bool:
+        try:
+            if hasattr(vehicleData, "model_dump"):
+                updateData = vehicleData.model_dump(exclude_none=True)
+            else:
+                updateData = {k: v for k, v in vehicleData.items() if v is not None}
+                
+            if not updateData:
+                logger.info("No fields provided for update.")
+                return True
+
+            setClauses = ", ".join([f"{key} = :{key}" for key in updateData.keys()])
+            
+            updateData["uuid"] = uuid
+
+            query = text(f"""
+                UPDATE vehicles
+                SET {setClauses}
+                WHERE uuid = :uuid
+                AND is_deleted = false
+            """)
+
+            result = self.db.execute(query, updateData)
+            
+            if result.rowcount == 0:
+                raise EntityNotFoundException(f"Veículo com UUID {uuid} não encontrado.")
+
+            self.db.commit()
+            logger.debug(f"Vehicle {uuid} patched successfully.")
+            return True
+
+        except IntegrityError as e:
+            self.db.rollback()
+            errorMsg = str(e.orig)
+            if "vehicles_year_check" in errorMsg:
+                raise InvalidYearException("Invalid Year by DB rules")
+            
+            if "vehicles_plate_key" in errorMsg:
+                raise DuplicateEntryException(f"Existing car plate")
+
+            raise BusinessException(f"Integrity error in data: {e}")

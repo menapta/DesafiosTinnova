@@ -35,15 +35,14 @@ async def fetch_and_cache_data():
 
                 if dollarValue:
                     formattedValue = "{:.2f}".format(float(dollarValue))
-
                     val_bytes = formattedValue.encode('utf-8')
-                    cacheClient.set("tinnova:dolar2real", val_bytes, ex=3600)
+                    cacheClient.set("tinnova:dolar2real", val_bytes)
                     print(f"INFO: Cache populado: {dollarValue} via {url}")
                     return 
 
             except Exception as e:
                 print(f"WARNING: Falha em {url}: {e}")
-        
+      
         cacheClient.set("tinnova:dolar2real", b"error") 
         print("ERROR: Todas as tentativas de popular o cache falharam.")
 

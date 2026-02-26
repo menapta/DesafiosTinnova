@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.models.Money import Money
 from app.models.InsertVehicle import InsertVehicle
+from app.models.UpdateVehiclePatch import UpdateVehiclePatch
 
 from ..HeaderSecurity import getAuthData, adminAuthData    
 from ..services.VehiclesService import VehiclesService
@@ -140,3 +141,19 @@ def deleteVehicle(uuid: str, hardDelete: bool = False, data: dict = Depends(admi
         )
     logger.info(f"Vehicle with UUID: {uuid} deleted successfully. Hard delete: {hardDelete}")
     return {"message": "Vehicle deleted successfully!"}
+
+@router.patch("/veiculos/{uuid}")
+def updatePatchVehicle(uuid: str, updateData: UpdateVehiclePatch, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+    logger.info(f"Attempting to partially update vehicle with UUID: {uuid} using data: {updateData} for admin user: {data['user']}")
+    repository = VehiclesRepository(db)
+    service = VehiclesService(repository)
+    success = service.updatePatchVehicle(uuid, updateData)
+
+    if not success:
+        logger.warning(f"Failed to partially update vehicle with UUID: {uuid} using data: {updateData}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to partially update vehicle! {}"
+        )
+    logger.info(f"Vehicle with UUID: {uuid} partially updated successfully using data: {updateData}")
+    return {"message": "Vehicle partially updated successfully!"}
