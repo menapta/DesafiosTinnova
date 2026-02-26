@@ -22,8 +22,16 @@ Para conseguir a documentação swagger, acessar http://127.0.0.1:8000/docs ou b
 
 As colections usadas para testes no Postamn se encontram no arquivo 0000000000Tinnova.postman_collection.json
 
+Foi utilziado banco de dados postgreSQL 
+
+As conexões com banco de dados, redis e secrets estão hardcoded. Entendo questões de segurança e boas práticas, mas não houve tempo hábil para colocar em variáveis de ambiente da forma adequada com explicações de como configurar.
+
+
 ## EXECUÇÔES
-Passos para ralizar as execuções
+
+### Testes
+Passos para ralizar as execuções, levantar docker-compose up
+
 
 #### Execução de testes geral para unitários
 python -m unittest discover -s tests -p "Tests*.py"
@@ -44,11 +52,13 @@ python -m pytest tests/integration/TestsVehiclesController.py -v
 python -m pytest tests/integration/TestsLoginController.py -v
 python -m pytest tests/integration/TestsRoot.py -v
 
-### Executar o docker
+### APP
+
+#### Executar o docker
 docker-compose up
 
-### Execução do APP 
+#### Execução do APP 
 uvicorn app.main:app --reload 
 
-### Para ver logs
+#### Para ver logs
 uvicorn app.main:app --reload --log-level debug

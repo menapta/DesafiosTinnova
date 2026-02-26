@@ -1,6 +1,5 @@
 
 import os
-import time
 import unittest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
@@ -37,7 +36,6 @@ class TestsVehicleRepository(unittest.TestCase):
         self.dbSession.execute(text("TRUNCATE TABLE vehicles RESTART IDENTITY CASCADE"))
         self.dbSession.execute(text("TRUNCATE TABLE brands RESTART IDENTITY CASCADE"))
         self.dbSession.commit()
-        # time.sleep(1)
 
     def tearDown(self):
         self.dbSession.close()
