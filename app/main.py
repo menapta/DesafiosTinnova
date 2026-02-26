@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import httpx
 import uvicorn
 
-from app.controllers import LoginController, RouteController, VehiclesController
+from app.controllers import LoginController, VehiclesController
 
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -55,7 +55,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Desafio Tinnova API", lifespan=lifespan)
 
 app.include_router(LoginController.router, prefix="/auth", tags=["Auth"])
-app.include_router(RouteController.router)
 app.include_router(VehiclesController.router)
 
 @app.get("/")
