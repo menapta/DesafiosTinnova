@@ -8,8 +8,8 @@ from .. import Logger
 logger = Logger.createLogger(__name__)
 
 class VehiclesService:
-
     repository: VehiclesRepository
+    
     def __init__(self, repository: VehiclesRepository):
         self.repository: VehiclesRepository = repository
     
@@ -25,7 +25,8 @@ class VehiclesService:
         logger.debug(f"VehiclesService: Fetching vehicles with price range: {minPrice} to {maxPrice}")
         return self.repository.getVehiclesByPrice(minPrice, maxPrice, offset, limit)
     
-    def getVehiclesByBrandYearColor(self, brand: str | None, year: int | None, color: str | None, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
+    def getVehiclesByBrandYearColor(self, brand: str | None, year: int | None, color: str | None, 
+                                                                offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
         logger.debug(f"VehiclesService: Fetching vehicles with filters - Brand: {brand}, Year: {year}, Color: {color}")
         return self.repository.getVehiclesByBrandYearColor(brand, year, color, offset, limit)
 
@@ -40,3 +41,7 @@ class VehiclesService:
     def updateCompleteVehicle(self, uuid: str, vehicleData: InsertVehicle) -> bool | None:
         logger.debug(f"VehiclesService: Updating vehicle with UUID: {uuid} using data: {vehicleData}")
         return self.repository.updateCompleteVehicle(uuid, vehicleData)
+
+    def deleteVehicle(self, uuid: str, hardDelete: bool = False) -> bool | None:
+        logger.debug(f"VehiclesService: Deleting vehicle with UUID: {uuid}")
+        return self.repository.deleteVehicle(uuid, hardDelete)

@@ -261,6 +261,30 @@ class VehiclesRepository:
         self.db.commit()
         logger.debug(f"Vehicle with UUID: {uuid} updated successfully, rows affected: {result.rowcount}")
         return result.rowcount == 1
+    
+    def deleteVehicle(self, uuid: str, hardDelete: bool = False) -> bool:
+        logger.info(f"Deleting vehicle with UUID: {uuid}")
+        
+        if hardDelete:
+            query = text("""
+                DELETE FROM vehicles
+                WHERE uuid = :uuid
+            """)
+            result = self.db.execute(query, {"uuid": uuid})
+            self.db.commit()
+            logger.debug(f"Vehicle with UUID: {uuid} hard deleted successfully, rows affected: {result.rowcount}")
+            return result.rowcount == 1
+        
+        query = text("""
+            UPDATE vehicles
+            SET is_deleted = true
+            WHERE uuid = :uuid
+              AND is_deleted = false
+        """)
+        result = self.db.execute(query, {"uuid": uuid})
+        self.db.commit()
+        logger.debug(f"Vehicle with UUID: {uuid} deleted successfully, rows affected: {result.rowcount}")
+        return result.rowcount == 1
 
     # def setVehicleAsDeleted(self, uuid: str) -> bool:
     #     logger.info(f"Setting vehicle with UUID: {uuid} as deleted")

@@ -112,3 +112,19 @@ def updateCompleteVehicle(uuid: str, vehicleData: InsertVehicle, data: dict = De
         )
     logger.info(f"Vehicle with UUID: {uuid} updated successfully using data: {vehicleData}")
     return {"message": "Vehicle updated successfully!"}
+
+@router.delete("/veiculos/{uuid}")
+def deleteVehicle(uuid: str, hardDelete: bool = False, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+    logger.info(f"Attempting to delete vehicle with UUID: {uuid} for admin user: {data['user']}. Hard delete: {hardDelete}")
+    repository = VehiclesRepository(db)
+    service = VehiclesService(repository)
+    success = service.deleteVehicle(uuid, hardDelete)
+
+    if not success:
+        logger.warning(f"Failed to delete vehicle with UUID: {uuid}. Hard delete: {hardDelete}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to delete vehicle! {}"
+        )
+    logger.info(f"Vehicle with UUID: {uuid} deleted successfully. Hard delete: {hardDelete}")
+    return {"message": "Vehicle deleted successfully!"}

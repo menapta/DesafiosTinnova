@@ -284,3 +284,29 @@ class TestsVehiclesController:
         logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
 
         assert response.status_code == 403
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.deleteVehicle")
+    def testDeleteVehicle(self, mockDeleteVehicle):
+        mockAdminData = {"user": "test_admin", "type": "admin"}
+        app.dependency_overrides[getAuthData] = lambda: mockAdminData
+
+        mockDeleteVehicle.return_value = True
+
+        response = client.delete("/veiculos/123e4567-e89b-12d3-a456-426614174000")
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 200
+        assert response.json()["message"] == "Vehicle deleted successfully!"
+
+
+    @patch("app.repositories.VehiclesRepository.VehiclesRepository.deleteVehicle")
+    def testDeleteVehicleNotAllowed(self, mockDeleteVehicle):
+        mockUserData = {"user": "test_user", "type": "user"}
+        app.dependency_overrides[getAuthData] = lambda: mockUserData
+
+        mockDeleteVehicle.return_value = True
+
+        response = client.delete("/veiculos/123e4567-e89b-12d3-a456-426614174000")
+        logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
+
+        assert response.status_code == 403

@@ -147,17 +147,29 @@ class TestsVehicleRepository(unittest.TestCase):
         self.assertEqual(newData.brand_name, "Toyota")
         self.assertEqual(newData.plate, "NEWPLATE")
 
-    # def testInsertVehicle(self):
-    #     self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
-    #     repo = VehiclesRepository(self.dbSession)
-    #     vehicle = Vehicle(
-    #         brand_name="Toyota",
-    #         complement="Corolla XEi 2.0 Flex 16V Aut. 2020",
-    #         year=2020,
-    #         color="Prata",
-    #         price=15000000,
-    #         plate="ABC1234",
-    #         date_created="2023-01-01T00:00:00"
-    #     )
-    #     result = repo.createVehicle(vehicle)    
-    #     self.assertTrue(result)
+
+    def testDeleteVehicleSoftDelete(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (uuid, brand_id, complement, year, color, price, plate) values
+        ('123e4567-e89b-12d3-a456-426614174000', 2, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNotNone(vehicle)
+        repo.deleteVehicle("123e4567-e89b-12d3-a456-426614174000")
+        deletedVehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNone(deletedVehicle)
+    
+    def testDeleteVehicleHardDelete(self):
+        self.dbSession.execute(text("""INSERT INTO brands (brand_name) VALUES ('Toyota'),('Ford'),('Chevrolet')"""))
+        self.dbSession.execute(text("""INSERT INTO vehicles (uuid, brand_id, complement, year, color, price, plate) values
+        ('123e4567-e89b-12d3-a456-426614174000', 2, 'Corolla XEi 2.0 Flex 16V Aut. 2020', 2020, 'Prata', 15000000, 'ABC1234')
+        """))
+        self.dbSession.commit()
+        repo = VehiclesRepository(self.dbSession)
+        vehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNotNone(vehicle)
+        repo.deleteVehicle("123e4567-e89b-12d3-a456-426614174000", hardDelete=True)
+        deletedVehicle: Vehicle = repo.getVehicleByUUID("123e4567-e89b-12d3-a456-426614174000")
+        self.assertIsNone(deletedVehicle)

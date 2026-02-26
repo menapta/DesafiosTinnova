@@ -99,3 +99,10 @@ class TestsVehicleService(unittest.TestCase):
 
         self.assertTrue(result)
         self.mockRepo.updateCompleteVehicle.assert_called_once_with("123e4567-e89b-12d3-a456-426614174000", updatedVehicle)
+
+    def testDeleteVehicle(self):
+        self.mockRepo.deleteVehicle.return_value = True
+
+        result = self.service.deleteVehicle("123e4567-e89b-12d3-a456-426614174000")
+        self.assertTrue(result)
+        self.mockRepo.deleteVehicle.assert_called_once_with("123e4567-e89b-12d3-a456-426614174000", False)
