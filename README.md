@@ -18,13 +18,27 @@ pip install -r requirements.txt
 
 
 ## INTRO
-Cada desafio está localizado em suas respectivas pastas "Desafio'XNomeDesafio'". Cada uma destas pastas tem seu prórpios README 
 
 ## EXECUÇÔES
-python -m pyttest "$@"
 
-python -m unittest "$@"
+#### Execução de testes geral para unitários
+python -m unittest discover -s tests -p "Tests*.py"
+
+#### Execução de testes geral para integração
+python -m pytest tests/integration/ -o "python_files=Tests*.py" -v
 
 
+python -m unittest discover -s tests tests/unit/ -v
 
- uvicorn app.main:app --reload --log-level debug
+#### Execução de testes individuais para unitários
+python -m pytest tests/integration/TestsLoginController.py -v  
+
+#### Execução de testes individuais para integração
+python -m unittest tests/unit/TestsVehicleRepository.py -v
+
+
+## Execução do APP 
+uvicorn app.main:app --reload 
+
+### Para ver logs
+uvicorn app.main:app --reload --log-level debug

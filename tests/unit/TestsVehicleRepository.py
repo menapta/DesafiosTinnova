@@ -137,7 +137,7 @@ class TestsVehicleRepository(unittest.TestCase):
             complement="novo complement",
             year=vehicle.year,
             color=vehicle.color,
-            price=vehicle.price,
+            price=vehicle.price_dolar_cents,
             plate="NEWPLATE"
         )
 

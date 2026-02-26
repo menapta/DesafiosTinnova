@@ -1,11 +1,58 @@
 from fastapi import FastAPI, Request, status
+from fastapi.concurrency import asynccontextmanager
+from contextlib import asynccontextmanager 
+import httpx
 import uvicorn
+
 from app.controllers import LoginController, RouteController, VehiclesController
 
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-app = FastAPI(title="Desafio Tinnova API")
+from app.Dependencies import getCacheClient
+cacheClient = getCacheClient()
+
+
+async def fetch_and_cache_data():
+    urls = [
+        "https://economia.awesomeapi.com.br/json/last/USD-BRL",
+        "https://api.frankfurter.app/latest?from=USD&to=BRL"
+    ]
+    
+    async with httpx.AsyncClient() as client:
+        for url in urls: 
+            try:
+                response = await client.get(url, timeout=5.0)
+                response.raise_for_status()
+                data = response.json()
+                
+                dollarValue = None
+
+                if "USDBRL" in data:
+                    dollarValue = data["USDBRL"].get("high")
+                elif "rates" in data:
+                    dollarValue = data["rates"].get("BRL")
+
+                if dollarValue:
+                    formattedValue = "{:.2f}".format(float(dollarValue))
+
+                    val_bytes = formattedValue.encode('utf-8')
+                    cacheClient.set("tinnova:dolar2real", val_bytes, ex=3600)
+                    print(f"INFO: Cache populado: {dollarValue} via {url}")
+                    return 
+
+            except Exception as e:
+                print(f"WARNING: Falha em {url}: {e}")
+        
+        cacheClient.set("tinnova:dolar2real", b"error") 
+        print("ERROR: Todas as tentativas de popular o cache falharam.")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await fetch_and_cache_data()
+    yield
+
+app = FastAPI(title="Desafio Tinnova API", lifespan=lifespan)
 
 app.include_router(LoginController.router, prefix="/auth", tags=["Auth"])
 app.include_router(RouteController.router)

@@ -6,5 +6,5 @@ class BaseVehicle(BaseModel):
     year: int
     color: str
     plate: str 
-    price: int
+    
     

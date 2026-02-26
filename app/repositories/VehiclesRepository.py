@@ -1,5 +1,3 @@
-
-
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -50,7 +48,7 @@ class VehiclesRepository:
                 year=cell[3],
                 color=cell[4],
                 plate=cell[5],
-                price=cell[6],
+                price_dolar_cents=cell[6],
                 date_created=str(cell[7])
             )
             vehicles.append(vehicle)
@@ -89,7 +87,7 @@ class VehiclesRepository:
             year=result[3],
             color=result[4],
             plate=result[5],
-            price=result[6],
+            price_dolar_cents=result[6],
             date_created=str(result[7])
         )
         logger.debug(f"Vehicle fetched with UUID: {uuid}, vehicle data: {vehicle}")
@@ -133,7 +131,7 @@ class VehiclesRepository:
                 year=cell[3],
                 color=cell[4],
                 plate=cell[5],
-                price=cell[6],
+                price_dolar_cents=cell[6],
                 date_created=str(cell[7])
             )
             vehicles.append(vehicle)
@@ -180,7 +178,7 @@ class VehiclesRepository:
                 year=cell[3],
                 color=cell[4],
                 plate=cell[5],
-                price=cell[6],
+                price_dolar_cents=cell[6],
                 date_created=str(cell[7])
             )
             vehicles.append(vehicle)

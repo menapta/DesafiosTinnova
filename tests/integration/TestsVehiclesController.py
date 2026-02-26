@@ -25,7 +25,7 @@ responseVehicles =[
         complement="Corolla", 
         year=2020, 
         color="Red", 
-        price=1500000,
+        price_dolar_cents=1500000,
         plate="ABC1234",
         date_created="2023-01-01T00:00:00",
     ),
@@ -35,7 +35,7 @@ responseVehicles =[
         complement="Civic", 
         year=2019, 
         color="Blue", 
-        price=2000000,
+        price_dolar_cents=2000000,
         plate="XYZ5678",
         date_created="2023-01-01T00:00:01",
     )
@@ -49,7 +49,7 @@ responseVehiclesToyota =[
         complement="Corolla", 
         year=2020, 
         color="Red", 
-        price=1500000,
+        price_dolar_cents=1500000,
         plate="ABC1234",
         date_created="2023-01-01T00:00:00",
     ),
@@ -59,7 +59,7 @@ responseVehiclesToyota =[
         complement="Etios", 
         year=2020, 
         color="Red", 
-        price=2000000,
+        price_dolar_cents=2000000,
         plate="XYZ5678",
         date_created="2023-01-01T00:00:01",
     )
@@ -128,7 +128,7 @@ class TestsVehiclesController:
                 complement="Corolla", 
                 year=2020, 
                 color="Red", 
-                price=1500000,
+                price_dolar_cents=1500000,
                 plate="ABC1234",
                 date_created="2023-01-01T00:00:00",
             )
@@ -169,7 +169,7 @@ class TestsVehiclesController:
         mockUserData = {"user": "test_user", "type": "user"}
         app.dependency_overrides[getAuthData] = lambda: mockUserData
 
-        response = client.get("/veiculos?minPreco=10000.00&maxPreco=20000.4444")
+        response = client.get("/veiculos?minPreco=10000.00&maxPreco=20000.4a4")
         logger.info(f"Response status code: {response.status_code}, Response body: {response.json()}")
 
         assert response.status_code == 400

@@ -1,8 +1,7 @@
-from decimal import Decimal
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
+from pydantic import BaseModel
+from app.models.Money import Money
 from app.models.InsertVehicle import InsertVehicle
 
 from ..HeaderSecurity import getAuthData, adminAuthData    
@@ -12,9 +11,11 @@ from ..DBConn import getDB
 from .. import Logger
 from ..models.Vehicle import Vehicle
 from ..models.VehicleFilters import VehicleFilters
+from app.Dependencies import getCacheClient
 
 logger = Logger.createLogger(__name__)
 router = APIRouter()
+
 
 @router.get("/veiculos")
 def getVehicles(
@@ -22,10 +23,15 @@ def getVehicles(
     offset: int = 0,
     limit: int = 20,
     authData: dict = Depends(getAuthData), 
-    db: Session = Depends(getDB)
-    ):
+    db: Session = Depends(getDB),
+    cache = Depends(getCacheClient)
+):
 
-    logger.info(f"Attempting to retrieve vehicles for user: {authData['user']}")
+    dollarValueKey = cache.get("tinnova:dolar2real") 
+    dollar2real = None if dollarValueKey == b'error' else  Money(float(dollarValueKey.decode('utf-8')))
+
+    logger.info(f"Attempting to retrieve vehicles for user: {authData['user']}. Dolar {dollar2real} BRL")
+
     repository = VehiclesRepository(db)
     service = VehiclesService(repository)
 
@@ -52,6 +58,12 @@ def getVehicles(
 
 
         vehicles: list[Vehicle] | None = service.getAllVehicles()
+
+    for v in vehicles:
+        real = Money((float(v.price_dolar_cents) / 100) * float(dollar2real)) if dollar2real else None
+        dollar = Money(float(v.price_dolar_cents) / 100) if v.price_dolar_cents else None
+        v.price_in_real = real if real else None
+        v.price_in_dollar = dollar if dollar else None
 
     return {"vehicles": vehicles}
 
