@@ -1,10 +1,16 @@
 from typing import cast
+import os
 
 import redis
 
 
 
 class Cache:
+    def __init__(self):
+        host = os.getenv("REDIS_HOST", "localhost")
+        port = int(os.getenv("REDIS_PORT", 6379))
+        self.redis_client = redis.Redis(host=host, port=port)
+
     def get(self, key: str) -> bytes | None:
         raise NotImplementedError
 

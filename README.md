@@ -62,3 +62,15 @@ uvicorn app.main:app --reload
 
 #### Para ver logs
 uvicorn app.main:app --reload --log-level debug
+
+
+docker stop docker-container-01 
+docker rm docker-container-01
+
+docker build -t docker-image-01 .
+docker run -d -p 8000:8000 --name docker-container-01 docker-image-01
+docker logs -f docker-container-01
+
+
+docker compose down
+docker compose up --build

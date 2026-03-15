@@ -17,6 +17,8 @@ class VehiclesService:
         self.repository: VehiclesRepository = repository
     
     def getAllVehicles(self, offset: int = 0, limit: int = 20) -> list[Vehicle] | None:
+        if offset < 0 or limit <= 0:
+            raise ValueError("Invalid pagination values")
         logger.debug(f"VehiclesService: Fetching vehicles with offset: {offset} and limit: {limit}")
         return self.repository.getAllVehicles(offset, limit)
 

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 import jwt
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
 
 from ..models.UserDB import UserDB
 
@@ -12,7 +12,7 @@ from ..DBConn import getDB
 from ..services.LoginService import LoginService
 from ..repositories.LoginRepository import LoginRepository
 from .. import Logger
-
+from ..RateLimiter import limiter
 
 SECRET_KEY = "alongsecretkeythatshouldbereplacedwithenvvariable"
 
@@ -24,10 +24,16 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+    @model_validator(mode="after")
+    def verifyUsernameAndPassword(self):
+        if not self.username  or not self.password:
+            raise ValueError("")
+        return self
 
 
 @router.post("/login")
-def login(userData: LoginRequest, db: Session = Depends(getDB)):
+@limiter.limit("5/minute")
+def login(request: Request, userData: LoginRequest, db: Session = Depends(getDB)):
     
     logger.info(f"Attempting login for user: {userData.username}")
 

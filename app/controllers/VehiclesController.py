@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.models.Money import Money
@@ -13,13 +13,16 @@ from .. import Logger
 from ..models.Vehicle import Vehicle
 from ..models.VehicleFilters import VehicleFilters
 from app.Dependencies import getCacheClient
+from ..RateLimiter import limiter
 
 logger = Logger.createLogger(__name__)
 router = APIRouter()
 
 
 @router.get("/veiculos")
+@limiter.limit("100/hour")
 def getVehicles(
+    request: Request,
     filters: VehicleFilters = Depends(),
     offset: int = 0,
     limit: int = 20,
@@ -69,7 +72,8 @@ def getVehicles(
     return {"vehicles": vehicles}
 
 @router.get("/veiculos/{uuid}")
-def getVehicleByUUID(uuid: str, data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
+@limiter.limit("100/hour")
+def getVehicleByUUID(request: Request, uuid: str, data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to retrieve vehicle with UUID: {uuid} for user: {data['user']}")
 
     repository = VehiclesRepository(db)
@@ -86,7 +90,8 @@ def getVehicleByUUID(uuid: str, data: dict = Depends(getAuthData), db: Session =
     return {"vehicle": vehicle}
 
 @router.get("/veiculos/relatorios/por-marca")
-def getVehicleReportByBrand(data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
+@limiter.limit("100/hour")
+def getVehicleReportByBrand(request: Request, data: dict = Depends(getAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to retrieve vehicle report by brand for user: {data['user']}")
     repository = VehiclesRepository(db)
     service = VehiclesService(repository)
@@ -94,7 +99,8 @@ def getVehicleReportByBrand(data: dict = Depends(getAuthData), db: Session = Dep
     return {"report": report}
 
 @router.post("/veiculos")
-def createVehicle(vehicleData: InsertVehicle, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+@limiter.limit("100/hour")
+def createVehicle(request: Request, vehicleData: InsertVehicle, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to create vehicle with data: {vehicleData} for admin user: {data['user']}")
     repository = VehiclesRepository(db)
     service = VehiclesService(repository)
@@ -111,7 +117,8 @@ def createVehicle(vehicleData: InsertVehicle, data: dict = Depends(adminAuthData
 
 
 @router.put("/veiculos/{uuid}")
-def updateCompleteVehicle(uuid: str, vehicleData: InsertVehicle, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+@limiter.limit("100/hour")
+def updateCompleteVehicle(request: Request, uuid: str, vehicleData: InsertVehicle, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to update vehicle with UUID: {uuid} using data: {vehicleData} for admin user: {data['user']}")
     repository = VehiclesRepository(db)
     service = VehiclesService(repository)
@@ -127,7 +134,8 @@ def updateCompleteVehicle(uuid: str, vehicleData: InsertVehicle, data: dict = De
     return {"message": "Vehicle updated successfully!"}
 
 @router.delete("/veiculos/{uuid}")
-def deleteVehicle(uuid: str, hardDelete: bool = False, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+@limiter.limit("100/hour")
+def deleteVehicle(request: Request, uuid: str, hardDelete: bool = False, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to delete vehicle with UUID: {uuid} for admin user: {data['user']}. Hard delete: {hardDelete}")
     repository = VehiclesRepository(db)
     service = VehiclesService(repository)
@@ -143,7 +151,8 @@ def deleteVehicle(uuid: str, hardDelete: bool = False, data: dict = Depends(admi
     return {"message": "Vehicle deleted successfully!"}
 
 @router.patch("/veiculos/{uuid}")
-def updatePatchVehicle(uuid: str, updateData: UpdateVehiclePatch, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
+@limiter.limit("100/hour")
+def updatePatchVehicle(request: Request, uuid: str, updateData: UpdateVehiclePatch, data: dict = Depends(adminAuthData), db: Session = Depends(getDB)):
     logger.info(f"Attempting to partially update vehicle with UUID: {uuid} using data: {updateData} for admin user: {data['user']}")
     repository = VehiclesRepository(db)
     service = VehiclesService(repository)
